@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace ViewModelExport.Writers
+namespace ViewModelExport.Writers;
+
+public interface IWriter
 {
-    public interface IWriter
-    {
-        string Process(Type t);
+    string Extension { get; }
 
-        string Name(Type t);
+    string Process(Type t);
 
-        string Extension { get; }
-    }
+    string Name(Type t);
 }

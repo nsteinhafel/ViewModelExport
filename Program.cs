@@ -1,37 +1,37 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using ViewModelExport.Services;
 
-namespace ViewModelExport
+namespace ViewModelExport;
+
+public class Program
 {
-    public class Program
+    [Required]
+    [Option(ShortName = "m", LongName = "model")]
+    public string[]? Models { get; set; }
+
+    [Required]
+    [FileOrDirectoryExists]
+    [Option(ShortName = "i", LongName = "input-dir")]
+    public string? InputDir { get; set; }
+
+    [Required]
+    [FileOrDirectoryExists]
+    [Option(ShortName = "o", LongName = "output-dir")]
+    public string? OutputDir { get; set; }
+
+    public static async Task<int> Main(string[] args)
     {
-        [Required]
-        [Option(ShortName = "m", LongName = "model")]
-        public string[]? Models { get; }
+        return await CommandLineApplication.ExecuteAsync<Program>(args);
+    }
 
-        [Required]
-        [FileOrDirectoryExists]
-        [Option(ShortName = "i", LongName = "input-dir")]
-        public string? InputDir { get; }
+    private async Task OnExecuteAsync()
+    {
+        if (Models == null || InputDir == null || OutputDir == null) return;
 
-        [Required]
-        [FileOrDirectoryExists]
-        [Option(ShortName = "o", LongName = "output-dir")]
-        public string? OutputDir { get; }
-
-        public static int Main(string[] args)
-        {
-            return CommandLineApplication.Execute<Program>(args);
-        }
-
-        private void OnExecute()
-        {
-            if (Models == null || InputDir == null || OutputDir == null) return;
-
-            var exporter = new ModelExporter(Models.ToHashSet(), InputDir, OutputDir);
-            exporter.Export();
-        }
+        var exporter = new ModelExporter(Models.ToHashSet(), InputDir, OutputDir);
+        await exporter.ExportAsync();
     }
 }
